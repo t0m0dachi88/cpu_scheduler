@@ -2,6 +2,7 @@
 #include "core/ProcessManager.h"
 #include "schedulers/FCFS.h"
 #include "schedulers/RoundRobin.h"
+#include "schedulers/PriorityScheduler.h"
 
 int main() {
     std::cout << "========================================\n";
@@ -27,6 +28,11 @@ int main() {
     RoundRobin rr(2);
     rr.runSimulation(manager);
     rr.printSummary(manager);
+
+    std::cout << "\n5. Executing Priority Scheduling (Non-preemptive) Scheduler...\n";
+    PriorityScheduler prioritySched;
+    prioritySched.runSimulation(manager);
+    prioritySched.printSummary(manager);
 
     return 0;
 }
