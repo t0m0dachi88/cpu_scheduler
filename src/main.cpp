@@ -1,41 +1,36 @@
 #include <iostream>
-#include <iomanip>
-#include "core/Process.h"
+#include "core/ProcessManager.h"
 
 int main() {
     std::cout << "========================================\n";
     std::cout << "       DSA CPU SCHEDULER SIMULATOR      \n";
     std::cout << "========================================\n\n";
 
-    std::cout << "--- Process Model Verification ---\n";
+    std::cout << "--- Process Manager & Input Validation Verification ---\n";
+
+    ProcessManager manager;
+
+    std::cout << "\n1. Adding valid standard processes (Section 24 Benchmark Workload)...\n";
+    manager.addProcess(1, 0, 5, 2); // P1
+    manager.addProcess(2, 1, 3, 1); // P2
+    manager.addProcess(3, 2, 8, 3); // P3
+
+    std::cout << "\n2. Testing Input Validation Error Cases:\n";
     
-    // Sample test workload from Section 24 of prompt
-    Process p1(1, 0, 5, 2);
-    Process p2(2, 1, 3, 1);
-    Process p3(3, 2, 8, 3);
+    std::cout << "   a. Testing Duplicate PID (P1): ";
+    manager.addProcess(1, 4, 6, 2);
 
-    // Simulate completion times for manual test check
-    p1.completionTime = 5;
-    p1.calculateMetrics();
-    p1.state = ProcessState::COMPLETED;
+    std::cout << "   b. Testing Negative Arrival Time (-2): ";
+    manager.addProcess(4, -2, 5, 1);
 
-    p2.completionTime = 8;
-    p2.calculateMetrics();
-    p2.state = ProcessState::COMPLETED;
+    std::cout << "   c. Testing Non-positive Burst Time (0): ";
+    manager.addProcess(5, 3, 0, 1);
 
-    p3.completionTime = 16;
-    p3.calculateMetrics();
-    p3.state = ProcessState::COMPLETED;
+    std::cout << "   d. Testing Non-positive Priority (0): ";
+    manager.addProcess(6, 3, 4, 0);
 
-    std::cout << "+-------+----------+--------+----------+--------+--------+--------+------------+\n";
-    std::cout << "|   PID | Arrival  | Burst  | Priority |   CT   |  TAT   |   WT   |    State   |\n";
-    std::cout << "+-------+----------+--------+----------+--------+--------+--------+------------+\n";
-
-    p1.printProcessDetails();
-    p2.printProcessDetails();
-    p3.printProcessDetails();
-
-    std::cout << "+-------+----------+--------+----------+--------+--------+--------+------------+\n";
+    std::cout << "\n3. Displaying Loaded Process Workload:\n";
+    manager.displayAll();
 
     return 0;
 }

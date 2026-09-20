@@ -18,8 +18,12 @@ Process::Process()
       waitingTime(0), state(ProcessState::NEW) {}
 
 Process::Process(int pid, int arrival, int burst, int prio)
-    : id(pid), arrivalTime(arrival), burstTime(burst), priority(prio),
-      remainingTime(burst), completionTime(0), turnaroundTime(0),
+    : id(pid < 1 ? 1 : pid),
+      arrivalTime(arrival < 0 ? 0 : arrival),
+      burstTime(burst < 1 ? 1 : burst),
+      priority(prio < 1 ? 1 : prio),
+      remainingTime(burst < 1 ? 1 : burst),
+      completionTime(0), turnaroundTime(0),
       waitingTime(0), state(ProcessState::NEW) {}
 
 void Process::calculateMetrics() {
