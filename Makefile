@@ -17,20 +17,23 @@ TEST_STACK_TARGET = $(TEST_BIN_DIR)/test_stack.exe
 TEST_SEARCH_SORT_TARGET = $(TEST_BIN_DIR)/test_search_sort.exe
 TEST_SCHEDULER_BASE_TARGET = $(TEST_BIN_DIR)/test_scheduler_base.exe
 TEST_FCFS_TARGET = $(TEST_BIN_DIR)/test_fcfs.exe
+TEST_ROUND_ROBIN_TARGET = $(TEST_BIN_DIR)/test_round_robin.exe
 
 # Source Files
 SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/core/Process.cpp \
        $(SRC_DIR)/core/ProcessManager.cpp \
        $(SRC_DIR)/utils/SearchSort.cpp \
-       $(SRC_DIR)/schedulers/FCFS.cpp
+       $(SRC_DIR)/schedulers/FCFS.cpp \
+       $(SRC_DIR)/schedulers/RoundRobin.cpp
 
 # Object Files
 OBJS = $(BUILD_DIR)/main.o \
        $(BUILD_DIR)/core/Process.o \
        $(BUILD_DIR)/core/ProcessManager.o \
        $(BUILD_DIR)/utils/SearchSort.o \
-       $(BUILD_DIR)/schedulers/FCFS.o
+       $(BUILD_DIR)/schedulers/FCFS.o \
+       $(BUILD_DIR)/schedulers/RoundRobin.o
 
 TEST_PROCESS_OBJS = $(BUILD_DIR)/tests/test_process.o \
                      $(BUILD_DIR)/core/Process.o \
@@ -63,6 +66,12 @@ TEST_FCFS_OBJS = $(BUILD_DIR)/tests/test_fcfs.o \
                   $(BUILD_DIR)/utils/SearchSort.o \
                   $(BUILD_DIR)/schedulers/FCFS.o
 
+TEST_ROUND_ROBIN_OBJS = $(BUILD_DIR)/tests/test_round_robin.o \
+                        $(BUILD_DIR)/core/Process.o \
+                        $(BUILD_DIR)/core/ProcessManager.o \
+                        $(BUILD_DIR)/utils/SearchSort.o \
+                        $(BUILD_DIR)/schedulers/RoundRobin.o
+
 # Default Target
 all: $(TARGET)
 
@@ -86,6 +95,10 @@ $(BUILD_DIR)/utils/SearchSort.o: $(SRC_DIR)/utils/SearchSort.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/schedulers/FCFS.o: $(SRC_DIR)/schedulers/FCFS.cpp
+	@if not exist "$(BUILD_DIR)\schedulers" mkdir "$(BUILD_DIR)\schedulers"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/schedulers/RoundRobin.o: $(SRC_DIR)/schedulers/RoundRobin.cpp
 	@if not exist "$(BUILD_DIR)\schedulers" mkdir "$(BUILD_DIR)\schedulers"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -121,6 +134,10 @@ $(BUILD_DIR)/tests/test_fcfs.o: $(TEST_DIR)/test_fcfs.cpp
 	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/tests/test_round_robin.o: $(TEST_DIR)/test_round_robin.cpp
+	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(TEST_PROCESS_TARGET): $(TEST_PROCESS_OBJS)
 	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_PROCESS_OBJS)
@@ -153,7 +170,11 @@ $(TEST_FCFS_TARGET): $(TEST_FCFS_OBJS)
 	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_FCFS_OBJS)
 
-test: $(TEST_PROCESS_TARGET) $(TEST_QUEUE_TARGET) $(TEST_CIRCULAR_QUEUE_TARGET) $(TEST_MIN_HEAP_TARGET) $(TEST_STACK_TARGET) $(TEST_SEARCH_SORT_TARGET) $(TEST_SCHEDULER_BASE_TARGET) $(TEST_FCFS_TARGET)
+$(TEST_ROUND_ROBIN_TARGET): $(TEST_ROUND_ROBIN_OBJS)
+	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_ROUND_ROBIN_OBJS)
+
+test: $(TEST_PROCESS_TARGET) $(TEST_QUEUE_TARGET) $(TEST_CIRCULAR_QUEUE_TARGET) $(TEST_MIN_HEAP_TARGET) $(TEST_STACK_TARGET) $(TEST_SEARCH_SORT_TARGET) $(TEST_SCHEDULER_BASE_TARGET) $(TEST_FCFS_TARGET) $(TEST_ROUND_ROBIN_TARGET)
 	./$(TEST_PROCESS_TARGET)
 	./$(TEST_QUEUE_TARGET)
 	./$(TEST_CIRCULAR_QUEUE_TARGET)
@@ -162,6 +183,7 @@ test: $(TEST_PROCESS_TARGET) $(TEST_QUEUE_TARGET) $(TEST_CIRCULAR_QUEUE_TARGET) 
 	./$(TEST_SEARCH_SORT_TARGET)
 	./$(TEST_SCHEDULER_BASE_TARGET)
 	./$(TEST_FCFS_TARGET)
+	./$(TEST_ROUND_ROBIN_TARGET)
 
 clean:
 	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)

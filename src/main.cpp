@@ -1,6 +1,7 @@
 #include <iostream>
 #include "core/ProcessManager.h"
 #include "schedulers/FCFS.h"
+#include "schedulers/RoundRobin.h"
 
 int main() {
     std::cout << "========================================\n";
@@ -20,9 +21,12 @@ int main() {
     std::cout << "\n3. Executing First-Come First-Served (FCFS) Scheduler...\n";
     FCFS fcfs;
     fcfs.runSimulation(manager);
-
-    std::cout << "\n4. Displaying FCFS Simulation Results:\n";
     fcfs.printSummary(manager);
+
+    std::cout << "\n4. Executing Round Robin (RR, Time Quantum = 2) Scheduler...\n";
+    RoundRobin rr(2);
+    rr.runSimulation(manager);
+    rr.printSummary(manager);
 
     return 0;
 }
