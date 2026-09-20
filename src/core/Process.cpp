@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& os, ProcessState state) {
 }
 
 Process::Process()
-    : id(0), arrivalTime(0), burstTime(0), priority(1),
+    : id(0), arrivalTime(0), burstTime(0), priority(1), originalPriority(1),
       remainingTime(0), completionTime(0), turnaroundTime(0),
       waitingTime(0), state(ProcessState::NEW) {}
 
@@ -27,6 +27,7 @@ Process::Process(int pid, int arrival, int burst, int prio)
       arrivalTime(arrival < 0 ? 0 : arrival),
       burstTime(burst < 1 ? 1 : burst),
       priority(prio < 1 ? 1 : prio),
+      originalPriority(prio < 1 ? 1 : prio),
       remainingTime(burst < 1 ? 1 : burst),
       completionTime(0), turnaroundTime(0),
       waitingTime(0), state(ProcessState::NEW) {}
@@ -40,6 +41,7 @@ void Process::calculateMetrics() {
 }
 
 void Process::reset() {
+    priority = originalPriority;
     remainingTime = burstTime;
     completionTime = 0;
     turnaroundTime = 0;

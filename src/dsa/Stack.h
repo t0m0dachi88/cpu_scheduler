@@ -79,6 +79,21 @@ public:
         }
     }
 
+    // Collects all stack elements into an external array without modifying the stack.
+    // Fills 'out' from index 0 as top-to-bottom (LIFO order: most recently pushed first).
+    // Returns number of elements collected. Caller must ensure out[] has 'maxSize' slots.
+    // O(n) Time
+    int collectToArray(T* out, int maxSize) const {
+        if (!out || maxSize <= 0) return 0;
+        int idx = 0;
+        StackNode<T>* curr = topNode;
+        while (curr != nullptr && idx < maxSize) {
+            out[idx++] = curr->data;
+            curr = curr->next;
+        }
+        return idx;
+    }
+
     // Prints stack elements from top to bottom (for execution history debugging)
     void printStack() const {
         if (isEmpty()) {

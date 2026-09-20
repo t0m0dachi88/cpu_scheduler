@@ -10,13 +10,16 @@ bool prioritySchedulerComparator(Process* const& a, Process* const& b);
 
 // Non-preemptive Priority CPU Scheduler implementation using MinHeap
 class PriorityScheduler : public SchedulerBase {
+private:
+    int agingInterval; // Time units a process must wait for its priority to increase (decrease in int value)
+
 public:
-    PriorityScheduler() = default;
+    explicit PriorityScheduler(int aging = 5);
     ~PriorityScheduler() override = default;
 
-    // Returns algorithm name
+    // Returns algorithm name including aging configuration
     std::string getAlgorithmName() const override {
-        return "Priority Scheduling (Non-preemptive)";
+        return "Priority Scheduling (Non-preemptive, Aging=" + std::to_string(agingInterval) + ")";
     }
 
     // Executes non-preemptive Priority CPU simulation on workload using MinHeap

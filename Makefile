@@ -19,6 +19,10 @@ TEST_SCHEDULER_BASE_TARGET = $(TEST_BIN_DIR)/test_scheduler_base.exe
 TEST_FCFS_TARGET = $(TEST_BIN_DIR)/test_fcfs.exe
 TEST_ROUND_ROBIN_TARGET = $(TEST_BIN_DIR)/test_round_robin.exe
 TEST_PRIORITY_SCHEDULER_TARGET = $(TEST_BIN_DIR)/test_priority_scheduler.exe
+TEST_VISUALIZER_TARGET = $(TEST_BIN_DIR)/test_visualizer.exe
+TEST_PERFORMANCE_ANALYZER_TARGET = $(TEST_BIN_DIR)/test_performance_analyzer.exe
+TEST_STATE_TRACKER_TARGET = $(TEST_BIN_DIR)/test_state_tracker.exe
+TEST_FILE_MANAGER_TARGET = $(TEST_BIN_DIR)/test_file_manager.exe
 
 # Source Files
 SRCS = $(SRC_DIR)/main.cpp \
@@ -27,7 +31,11 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/utils/SearchSort.cpp \
        $(SRC_DIR)/schedulers/FCFS.cpp \
        $(SRC_DIR)/schedulers/RoundRobin.cpp \
-       $(SRC_DIR)/schedulers/PriorityScheduler.cpp
+       $(SRC_DIR)/schedulers/PriorityScheduler.cpp \
+       $(SRC_DIR)/utils/Visualizer.cpp \
+       $(SRC_DIR)/utils/PerformanceAnalyzer.cpp \
+       $(SRC_DIR)/utils/StateTracker.cpp \
+       $(SRC_DIR)/utils/FileManager.cpp
 
 # Object Files
 OBJS = $(BUILD_DIR)/main.o \
@@ -36,7 +44,11 @@ OBJS = $(BUILD_DIR)/main.o \
        $(BUILD_DIR)/utils/SearchSort.o \
        $(BUILD_DIR)/schedulers/FCFS.o \
        $(BUILD_DIR)/schedulers/RoundRobin.o \
-       $(BUILD_DIR)/schedulers/PriorityScheduler.o
+       $(BUILD_DIR)/schedulers/PriorityScheduler.o \
+       $(BUILD_DIR)/utils/Visualizer.o \
+       $(BUILD_DIR)/utils/PerformanceAnalyzer.o \
+       $(BUILD_DIR)/utils/StateTracker.o \
+       $(BUILD_DIR)/utils/FileManager.o
 
 TEST_PROCESS_OBJS = $(BUILD_DIR)/tests/test_process.o \
                      $(BUILD_DIR)/core/Process.o \
@@ -61,25 +73,64 @@ TEST_SEARCH_SORT_OBJS = $(BUILD_DIR)/tests/test_search_sort.o \
 TEST_SCHEDULER_BASE_OBJS = $(BUILD_DIR)/tests/test_scheduler_base.o \
                             $(BUILD_DIR)/core/Process.o \
                             $(BUILD_DIR)/core/ProcessManager.o \
-                            $(BUILD_DIR)/utils/SearchSort.o
+                            $(BUILD_DIR)/utils/SearchSort.o \
+                            $(BUILD_DIR)/utils/StateTracker.o
 
 TEST_FCFS_OBJS = $(BUILD_DIR)/tests/test_fcfs.o \
                   $(BUILD_DIR)/core/Process.o \
                   $(BUILD_DIR)/core/ProcessManager.o \
                   $(BUILD_DIR)/utils/SearchSort.o \
+                  $(BUILD_DIR)/utils/StateTracker.o \
                   $(BUILD_DIR)/schedulers/FCFS.o
 
 TEST_ROUND_ROBIN_OBJS = $(BUILD_DIR)/tests/test_round_robin.o \
                         $(BUILD_DIR)/core/Process.o \
                         $(BUILD_DIR)/core/ProcessManager.o \
                         $(BUILD_DIR)/utils/SearchSort.o \
+                        $(BUILD_DIR)/utils/StateTracker.o \
                         $(BUILD_DIR)/schedulers/RoundRobin.o
 
 TEST_PRIORITY_SCHEDULER_OBJS = $(BUILD_DIR)/tests/test_priority_scheduler.o \
                                 $(BUILD_DIR)/core/Process.o \
                                 $(BUILD_DIR)/core/ProcessManager.o \
                                 $(BUILD_DIR)/utils/SearchSort.o \
+                                $(BUILD_DIR)/utils/StateTracker.o \
                                 $(BUILD_DIR)/schedulers/PriorityScheduler.o
+
+TEST_VISUALIZER_OBJS = $(BUILD_DIR)/tests/test_visualizer.o \
+                        $(BUILD_DIR)/core/Process.o \
+                        $(BUILD_DIR)/core/ProcessManager.o \
+                        $(BUILD_DIR)/utils/SearchSort.o \
+                        $(BUILD_DIR)/utils/StateTracker.o \
+                        $(BUILD_DIR)/utils/Visualizer.o \
+                        $(BUILD_DIR)/schedulers/FCFS.o \
+                        $(BUILD_DIR)/schedulers/RoundRobin.o \
+                        $(BUILD_DIR)/schedulers/PriorityScheduler.o
+
+TEST_PERFORMANCE_ANALYZER_OBJS = $(BUILD_DIR)/tests/test_performance_analyzer.o \
+                                   $(BUILD_DIR)/core/Process.o \
+                                   $(BUILD_DIR)/core/ProcessManager.o \
+                                   $(BUILD_DIR)/utils/SearchSort.o \
+                                   $(BUILD_DIR)/utils/StateTracker.o \
+                                   $(BUILD_DIR)/utils/Visualizer.o \
+                                   $(BUILD_DIR)/utils/PerformanceAnalyzer.o \
+                                   $(BUILD_DIR)/schedulers/FCFS.o \
+                                   $(BUILD_DIR)/schedulers/RoundRobin.o \
+                                   $(BUILD_DIR)/schedulers/PriorityScheduler.o
+
+TEST_STATE_TRACKER_OBJS = $(BUILD_DIR)/tests/test_state_tracker.o \
+                           $(BUILD_DIR)/core/Process.o \
+                           $(BUILD_DIR)/core/ProcessManager.o \
+                           $(BUILD_DIR)/utils/SearchSort.o \
+                           $(BUILD_DIR)/utils/StateTracker.o \
+                           $(BUILD_DIR)/schedulers/FCFS.o \
+                           $(BUILD_DIR)/schedulers/RoundRobin.o \
+                           $(BUILD_DIR)/schedulers/PriorityScheduler.o
+
+TEST_FILE_MANAGER_OBJS = $(BUILD_DIR)/tests/test_file_manager.o \
+                          $(BUILD_DIR)/core/Process.o \
+                          $(BUILD_DIR)/core/ProcessManager.o \
+                          $(BUILD_DIR)/utils/FileManager.o
 
 # Default Target
 all: $(TARGET)
@@ -113,6 +164,22 @@ $(BUILD_DIR)/schedulers/RoundRobin.o: $(SRC_DIR)/schedulers/RoundRobin.cpp
 
 $(BUILD_DIR)/schedulers/PriorityScheduler.o: $(SRC_DIR)/schedulers/PriorityScheduler.cpp
 	@if not exist "$(BUILD_DIR)\schedulers" mkdir "$(BUILD_DIR)\schedulers"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/utils/Visualizer.o: $(SRC_DIR)/utils/Visualizer.cpp
+	@if not exist "$(BUILD_DIR)\utils" mkdir "$(BUILD_DIR)\utils"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/utils/PerformanceAnalyzer.o: $(SRC_DIR)/utils/PerformanceAnalyzer.cpp
+	@if not exist "$(BUILD_DIR)\utils" mkdir "$(BUILD_DIR)\utils"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/utils/StateTracker.o: $(SRC_DIR)/utils/StateTracker.cpp
+	@if not exist "$(BUILD_DIR)\utils" mkdir "$(BUILD_DIR)\utils"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/utils/FileManager.o: $(SRC_DIR)/utils/FileManager.cpp
+	@if not exist "$(BUILD_DIR)\utils" mkdir "$(BUILD_DIR)\utils"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/tests/test_process.o: $(TEST_DIR)/test_process.cpp
@@ -152,6 +219,22 @@ $(BUILD_DIR)/tests/test_round_robin.o: $(TEST_DIR)/test_round_robin.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/tests/test_priority_scheduler.o: $(TEST_DIR)/test_priority_scheduler.cpp
+	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/tests/test_visualizer.o: $(TEST_DIR)/test_visualizer.cpp
+	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/tests/test_performance_analyzer.o: $(TEST_DIR)/test_performance_analyzer.cpp
+	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/tests/test_state_tracker.o: $(TEST_DIR)/test_state_tracker.cpp
+	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/tests/test_file_manager.o: $(TEST_DIR)/test_file_manager.cpp
 	@if not exist "$(BUILD_DIR)\tests" mkdir "$(BUILD_DIR)\tests"
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -195,7 +278,23 @@ $(TEST_PRIORITY_SCHEDULER_TARGET): $(TEST_PRIORITY_SCHEDULER_OBJS)
 	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
 	$(CXX) $(CXXFLAGS) -o $@ $(TEST_PRIORITY_SCHEDULER_OBJS)
 
-test: $(TEST_PROCESS_TARGET) $(TEST_QUEUE_TARGET) $(TEST_CIRCULAR_QUEUE_TARGET) $(TEST_MIN_HEAP_TARGET) $(TEST_STACK_TARGET) $(TEST_SEARCH_SORT_TARGET) $(TEST_SCHEDULER_BASE_TARGET) $(TEST_FCFS_TARGET) $(TEST_ROUND_ROBIN_TARGET) $(TEST_PRIORITY_SCHEDULER_TARGET)
+$(TEST_VISUALIZER_TARGET): $(TEST_VISUALIZER_OBJS)
+	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_VISUALIZER_OBJS)
+
+$(TEST_PERFORMANCE_ANALYZER_TARGET): $(TEST_PERFORMANCE_ANALYZER_OBJS)
+	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_PERFORMANCE_ANALYZER_OBJS)
+
+$(TEST_STATE_TRACKER_TARGET): $(TEST_STATE_TRACKER_OBJS)
+	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_STATE_TRACKER_OBJS)
+
+$(TEST_FILE_MANAGER_TARGET): $(TEST_FILE_MANAGER_OBJS)
+	@if not exist "$(BUILD_DIR)\tests_bin" mkdir "$(BUILD_DIR)\tests_bin"
+	$(CXX) $(CXXFLAGS) -o $@ $(TEST_FILE_MANAGER_OBJS)
+
+test: $(TEST_PROCESS_TARGET) $(TEST_QUEUE_TARGET) $(TEST_CIRCULAR_QUEUE_TARGET) $(TEST_MIN_HEAP_TARGET) $(TEST_STACK_TARGET) $(TEST_SEARCH_SORT_TARGET) $(TEST_SCHEDULER_BASE_TARGET) $(TEST_FCFS_TARGET) $(TEST_ROUND_ROBIN_TARGET) $(TEST_PRIORITY_SCHEDULER_TARGET) $(TEST_VISUALIZER_TARGET) $(TEST_PERFORMANCE_ANALYZER_TARGET) $(TEST_STATE_TRACKER_TARGET) $(TEST_FILE_MANAGER_TARGET)
 	./$(TEST_PROCESS_TARGET)
 	./$(TEST_QUEUE_TARGET)
 	./$(TEST_CIRCULAR_QUEUE_TARGET)
@@ -206,6 +305,10 @@ test: $(TEST_PROCESS_TARGET) $(TEST_QUEUE_TARGET) $(TEST_CIRCULAR_QUEUE_TARGET) 
 	./$(TEST_FCFS_TARGET)
 	./$(TEST_ROUND_ROBIN_TARGET)
 	./$(TEST_PRIORITY_SCHEDULER_TARGET)
+	./$(TEST_VISUALIZER_TARGET)
+	./$(TEST_PERFORMANCE_ANALYZER_TARGET)
+	./$(TEST_STATE_TRACKER_TARGET)
+	./$(TEST_FILE_MANAGER_TARGET)
 
 clean:
 	@if exist $(BUILD_DIR) rmdir /s /q $(BUILD_DIR)

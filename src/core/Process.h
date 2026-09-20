@@ -21,7 +21,8 @@ public:
     int id;             // Process Identifier (PID)
     int arrivalTime;    // Time at which process arrives in ready queue
     int burstTime;      // Total CPU time required by process
-    int priority;       // Priority level (lower integer = higher priority, e.g., 1 is highest)
+    int priority;       // Current priority level (can be modified by aging)
+    int originalPriority; // Initial priority level (used for reset and aging calculations)
     int remainingTime;  // CPU burst time remaining for execution
     int completionTime; // Time at which process finishes execution
     int turnaroundTime;// Total time from arrival to completion (CT - AT)

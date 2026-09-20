@@ -138,6 +138,17 @@ public:
     void clear() {
         count = 0;
     }
+
+    // Re-heapifies the entire buffer (O(N)) - useful if element keys are updated externally
+    void rebuild() {
+        for (int i = parent(count - 1); i >= 0; i--) {
+            heapifyDown(i);
+        }
+    }
+
+    // Direct access to buffer and count (for external modification + rebuild)
+    int getCount() const { return count; }
+    T* getBuffer() { return heap; }
 };
 
 #endif // MIN_HEAP_H

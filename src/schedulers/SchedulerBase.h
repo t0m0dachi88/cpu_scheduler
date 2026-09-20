@@ -5,6 +5,7 @@
 #include "core/ProcessManager.h"
 #include "dsa/Stack.h"
 #include "utils/SearchSort.h"
+#include "utils/StateTracker.h"
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -27,6 +28,7 @@ protected:
     int totalCpuTime;          // Total time units elapsed during simulation
     int idleTime;              // Total CPU idle time units
     Stack<ExecutionStep> executionHistory; // LIFO stack recording CPU execution slices
+    StateTracker stateTracker;             // Logs process state transitions during simulation
 
     // Calculates aggregate average waiting and turnaround metrics from completed processes
     void calculateAggregateMetrics(ProcessManager& processManager) {
@@ -75,6 +77,7 @@ public:
         totalCpuTime = 0;
         idleTime = 0;
         executionHistory.clear();
+        stateTracker.clear();
     }
 
     // Displays comprehensive simulation metrics summary
@@ -100,6 +103,8 @@ public:
     int getTotalCpuTime() const { return totalCpuTime; }
     int getIdleTime() const { return idleTime; }
     const Stack<ExecutionStep>& getExecutionHistory() const { return executionHistory; }
+    const StateTracker& getStateTracker() const { return stateTracker; }
+    StateTracker& getStateTrackerMutable() { return stateTracker; }
 };
 
 #endif // SCHEDULER_BASE_H

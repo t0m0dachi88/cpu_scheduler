@@ -1,5 +1,6 @@
 #include "schedulers/PriorityScheduler.h"
 #include "utils/SearchSort.h"
+#include <algorithm> // for std::max
 
 bool prioritySchedulerComparator(Process* const& a, Process* const& b) {
     if (a->priority != b->priority) {
@@ -10,6 +11,9 @@ bool prioritySchedulerComparator(Process* const& a, Process* const& b) {
     }
     return a->id < b->id; // Lower PID first
 }
+
+PriorityScheduler::PriorityScheduler(int aging) 
+    : agingInterval(aging > 0 ? aging : 5) {}
 
 void PriorityScheduler::runSimulation(ProcessManager& processManager) {
     reset();
@@ -31,9 +35,30 @@ void PriorityScheduler::runSimulation(ProcessManager& processManager) {
     while (completedCount < count) {
         // Enqueue all processes that have arrived by currentTime into MinHeap
         while (arrivalIdx < count && processes[arrivalIdx].arrivalTime <= currentTime) {
-            processes[arrivalIdx].state = ProcessState::READY;
+            stateTracker.transitionProcess(processes[arrivalIdx], ProcessState::READY, currentTime);
             readyHeap.insert(&processes[arrivalIdx]);
             arrivalIdx++;
+        }
+
+        // Apply aging to all processes currently in the ready queue
+        if (readyHeap.getCount() > 0) {
+            Process** heapBuffer = readyHeap.getBuffer();
+            bool priorityChanged = false;
+            for (int i = 0; i < readyHeap.getCount(); ++i) {
+                Process* p = heapBuffer[i];
+                int waitTime = currentTime - p->arrivalTime;
+                if (waitTime > 0) {
+                    int newPriority = std::max(1, p->originalPriority - (waitTime / agingInterval));
+                    if (newPriority != p->priority) {
+                        p->priority = newPriority;
+                        priorityChanged = true;
+                    }
+                }
+            }
+            // If any priorities were modified, rebuild the heap to restore MinHeap property
+            if (priorityChanged) {
+                readyHeap.rebuild();
+            }
         }
 
         // If readyHeap is empty but processes remain, CPU is idle
@@ -49,7 +74,7 @@ void PriorityScheduler::runSimulation(ProcessManager& processManager) {
 
         // Extract highest priority process (min priority integer) from MinHeap
         Process* currentProc = readyHeap.extractMin();
-        currentProc->state = ProcessState::RUNNING;
+        stateTracker.transitionProcess(*currentProc, ProcessState::RUNNING, currentTime);
 
         int startTime = currentTime;
         // Non-preemptive execution: runs until remaining time reaches 0
@@ -57,14 +82,14 @@ void PriorityScheduler::runSimulation(ProcessManager& processManager) {
         currentProc->remainingTime = 0;
         currentProc->completionTime = currentTime;
         currentProc->calculateMetrics();
-        currentProc->state = ProcessState::COMPLETED;
+        stateTracker.transitionProcess(*currentProc, ProcessState::COMPLETED, currentTime);
 
         completedCount++;
         executionHistory.push(ExecutionStep(currentProc->id, startTime, currentTime));
 
         // Enqueue any processes that arrived during this execution window into MinHeap
         while (arrivalIdx < count && processes[arrivalIdx].arrivalTime <= currentTime) {
-            processes[arrivalIdx].state = ProcessState::READY;
+            stateTracker.transitionProcess(processes[arrivalIdx], ProcessState::READY, currentTime);
             readyHeap.insert(&processes[arrivalIdx]);
             arrivalIdx++;
         }

@@ -25,7 +25,7 @@ void RoundRobin::runSimulation(ProcessManager& processManager) {
     while (completedCount < count) {
         // Enqueue all processes that have arrived by currentTime
         while (arrivalIdx < count && processes[arrivalIdx].arrivalTime <= currentTime) {
-            processes[arrivalIdx].state = ProcessState::READY;
+            stateTracker.transitionProcess(processes[arrivalIdx], ProcessState::READY, currentTime);
             readyQueue.enqueue(&processes[arrivalIdx]);
             arrivalIdx++;
         }
@@ -43,7 +43,7 @@ void RoundRobin::runSimulation(ProcessManager& processManager) {
 
         // Dequeue process at front of circular queue
         Process* currentProc = readyQueue.dequeue();
-        currentProc->state = ProcessState::RUNNING;
+        stateTracker.transitionProcess(*currentProc, ProcessState::RUNNING, currentTime);
 
         int startTime = currentTime;
         int execTime = std::min(timeQuantum, currentProc->remainingTime);
@@ -55,7 +55,7 @@ void RoundRobin::runSimulation(ProcessManager& processManager) {
 
         // Enqueue any new processes that arrived during this time slice BEFORE re-enqueueing currentProc
         while (arrivalIdx < count && processes[arrivalIdx].arrivalTime <= currentTime) {
-            processes[arrivalIdx].state = ProcessState::READY;
+            stateTracker.transitionProcess(processes[arrivalIdx], ProcessState::READY, currentTime);
             readyQueue.enqueue(&processes[arrivalIdx]);
             arrivalIdx++;
         }
@@ -64,10 +64,10 @@ void RoundRobin::runSimulation(ProcessManager& processManager) {
         if (currentProc->remainingTime == 0) {
             currentProc->completionTime = currentTime;
             currentProc->calculateMetrics();
-            currentProc->state = ProcessState::COMPLETED;
+            stateTracker.transitionProcess(*currentProc, ProcessState::COMPLETED, currentTime);
             completedCount++;
         } else {
-            currentProc->state = ProcessState::READY;
+            stateTracker.transitionProcess(*currentProc, ProcessState::READY, currentTime);
             readyQueue.enqueue(currentProc);
         }
     }

@@ -103,13 +103,53 @@ bool testPriorityCpuIdleTime() {
     return true;
 }
 
+bool testAgingMechanism() {
+    PriorityScheduler sched(5); // agingInterval = 5
+    ProcessManager pm;
+    
+    pm.addProcess(1, 0, 10, 1);  // P1 runs t=0..10
+    pm.addProcess(2, 1, 10, 5);  // P2 low priority
+    pm.addProcess(3, 2, 10, 3);  // P3 med priority
+    pm.addProcess(4, 11, 10, 3); // P4 med priority arriving later
+
+    sched.runSimulation(pm);
+
+    // Timeline with aging:
+    // t=0: P1 starts.
+    // t=10: P1 finishes. P2(wait=9, prio=5-1=4), P3(wait=8, prio=3-1=2). P3 selected.
+    // t=20: P3 finishes. P2(wait=19, prio=5-3=2), P4(wait=9, prio=3-1=2). 
+    //       Both prio=2. P2 arrived first (1 < 11). P2 selected.
+    // t=30: P2 finishes. P4(wait=19, prio=3-3=1 -> 1). P4 selected.
+    // t=40: P4 finishes.
+    ASSERT_EQUAL(pm.getProcessAt(0).completionTime, 10, "P1 finishes at 10");
+    ASSERT_EQUAL(pm.getProcessAt(2).completionTime, 20, "P3 finishes at 20");
+    ASSERT_EQUAL(pm.getProcessAt(1).completionTime, 30, "P2 finishes at 30 due to aging");
+    ASSERT_EQUAL(pm.getProcessAt(3).completionTime, 40, "P4 finishes at 40");
+
+    // Verify without aging, order is P1, P3, P4, P2 (P2 starves)
+    PriorityScheduler schedNoAging(9999);
+    ProcessManager pmNoAging;
+    pmNoAging.addProcess(1, 0, 10, 1); 
+    pmNoAging.addProcess(2, 1, 10, 5); 
+    pmNoAging.addProcess(3, 2, 10, 3);
+    pmNoAging.addProcess(4, 11, 10, 3);
+    schedNoAging.runSimulation(pmNoAging);
+    
+    ASSERT_EQUAL(pmNoAging.getProcessAt(0).completionTime, 10, "No Aging P1 finishes at 10");
+    ASSERT_EQUAL(pmNoAging.getProcessAt(2).completionTime, 20, "No Aging P3 finishes at 20");
+    ASSERT_EQUAL(pmNoAging.getProcessAt(3).completionTime, 30, "No Aging P4 bypasses P2");
+    ASSERT_EQUAL(pmNoAging.getProcessAt(1).completionTime, 40, "No Aging P2 starves to end");
+
+    return true;
+}
+
 int main() {
     std::cout << "========================================\n";
     std::cout << "   RUNNING PRIORITY SCHEDULER TESTS     \n";
     std::cout << "========================================\n\n";
 
     int passed = 0;
-    int total = 3;
+    int total = 4;
 
     auto runTest = [&](const std::string& name, bool (*testFunc)()) {
         std::cout << "[TEST]: " << name << " ... ";
@@ -124,6 +164,7 @@ int main() {
     runTest("Priority Benchmark Workload (Section 24)", testPriorityBenchmarkWorkload);
     runTest("Priority Non-Preemptive Execution & MinHeap Selection", testPriorityDynamicArrivalSelection);
     runTest("Priority CPU Idle Time Handling", testPriorityCpuIdleTime);
+    runTest("Aging Mechanism Prevents Starvation", testAgingMechanism);
 
     std::cout << "\n----------------------------------------\n";
     std::cout << "Test Summary: " << passed << " / " << total << " tests passed.\n";

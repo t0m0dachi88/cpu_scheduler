@@ -21,7 +21,7 @@ void FCFS::runSimulation(ProcessManager& processManager) {
     while (completedCount < count) {
         // Enqueue all processes that have arrived by currentTime
         while (arrivalIdx < count && processes[arrivalIdx].arrivalTime <= currentTime) {
-            processes[arrivalIdx].state = ProcessState::READY;
+            stateTracker.transitionProcess(processes[arrivalIdx], ProcessState::READY, currentTime);
             readyQueue.enqueue(&processes[arrivalIdx]);
             arrivalIdx++;
         }
@@ -39,21 +39,21 @@ void FCFS::runSimulation(ProcessManager& processManager) {
 
         // Dequeue process at front of FIFO queue
         Process* currentProc = readyQueue.dequeue();
-        currentProc->state = ProcessState::RUNNING;
+        stateTracker.transitionProcess(*currentProc, ProcessState::RUNNING, currentTime);
 
         int startTime = currentTime;
         currentTime += currentProc->burstTime;
         currentProc->remainingTime = 0;
         currentProc->completionTime = currentTime;
         currentProc->calculateMetrics();
-        currentProc->state = ProcessState::COMPLETED;
+        stateTracker.transitionProcess(*currentProc, ProcessState::COMPLETED, currentTime);
 
         completedCount++;
         executionHistory.push(ExecutionStep(currentProc->id, startTime, currentTime));
 
         // Enqueue processes that arrived during this execution window
         while (arrivalIdx < count && processes[arrivalIdx].arrivalTime <= currentTime) {
-            processes[arrivalIdx].state = ProcessState::READY;
+            stateTracker.transitionProcess(processes[arrivalIdx], ProcessState::READY, currentTime);
             readyQueue.enqueue(&processes[arrivalIdx]);
             arrivalIdx++;
         }
