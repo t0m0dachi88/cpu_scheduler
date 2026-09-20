@@ -1,2 +1,10 @@
+# Build directories and outputs
+build/
+bin/
+*.exe
+
+# IDE and temporary files
 implementation_plan.md
-.exe
+.vscode/
+.idea/
+*.o
