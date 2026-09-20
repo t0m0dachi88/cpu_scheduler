@@ -14,6 +14,7 @@ enum class ProcessState {
 
 // Helper function to convert ProcessState enum to string representation
 std::string processStateToString(ProcessState state);
+std::ostream& operator<<(std::ostream& os, ProcessState state);
 
 class Process {
 public:

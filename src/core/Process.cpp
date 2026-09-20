@@ -12,6 +12,11 @@ std::string processStateToString(ProcessState state) {
     }
 }
 
+std::ostream& operator<<(std::ostream& os, ProcessState state) {
+    os << processStateToString(state);
+    return os;
+}
+
 Process::Process()
     : id(0), arrivalTime(0), burstTime(0), priority(1),
       remainingTime(0), completionTime(0), turnaroundTime(0),
