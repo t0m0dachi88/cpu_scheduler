@@ -7,17 +7,25 @@ SRC_DIR = src
 BUILD_DIR = build
 TARGET = cpu_scheduler.exe
 
-# Sources and Objects
-SRCS = $(SRC_DIR)/main.cpp
-OBJS = $(BUILD_DIR)/main.o
+# Source Files
+SRCS = $(SRC_DIR)/main.cpp \
+       $(SRC_DIR)/core/Process.cpp
 
-# Target rule
+# Object Files
+OBJS = $(BUILD_DIR)/main.o \
+       $(BUILD_DIR)/core/Process.o
+
+# Default Target
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
 
 $(BUILD_DIR)/main.o: $(SRC_DIR)/main.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/core/Process.o: $(SRC_DIR)/core/Process.cpp
+	@if not exist "$(BUILD_DIR)/core" powershell -Command "New-Item -ItemType Directory -Force -Path '$(BUILD_DIR)/core'" > nul
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
